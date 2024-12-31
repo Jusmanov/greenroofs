@@ -14,32 +14,30 @@
 <body>
     <div id="map"></div>
     <script>
-        // Initialize the map and set its view to New York City
         var map = L.map('map').setView([40.7128, -74.0060], 12);
 
-        // Load and display tile layers on the map (e.g., OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Load the CSV data
+        function getRadius(gr_area) {
+            return Math.sqrt(gr_area) * 10;
+        }
+
         Papa.parse('GreenRoofData2016_20180917.csv', {
             download: true,
             header: true,
             complete: function(results) {
-                // Process the CSV data
                 results.data.forEach(function(row) {
-                    if (row.xcoord && row.ycoord) {
-                        // Create a circle marker for each point
+                    if (row.xcoord && row.ycoord && row.gr_area) {
                         var marker = L.circle([row.ycoord, row.xcoord], {
                             color: 'green',
                             fillColor: '#3f0',
                             fillOpacity: 0.5,
-                            radius: 50 // Adjust the radius as needed
+                            radius: getRadius(parseFloat(row.gr_area))
                         }).addTo(map);
 
-                        // Add a popup with the green roof area
-                        marker.bindPopup('Green Roof Area: ' + row.gr_area);
+                        marker.bindPopup('Green Roof Area: ' + row.gr_area + ' sq ft');
                     }
                 });
             }
