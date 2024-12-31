@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Green Roof Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        #map { height: 600px; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Initialize the map and set its view to a given geographical point and zoom level
+        var map = L.map('map').setView([35.2271, -80.8431], 13);
+
+        // Load and display tile layers on the map (e.g., OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Load the CSV data
+        Papa.parse('GreenRoofData2016_20180917.csv', {
+            download: true,
+            header: true,
+            complete: function(results) {
+                // Process the CSV data
+                results.data.forEach(function(row) {
+                    if (row.xcoord && row.ycoord) {
+                        // Create a circle marker for each point
+                        var marker = L.circle([row.ycoord, row.xcoord], {
+                            color: 'green',
+                            fillColor: '#3f0',
+                            fillOpacity: 0.5,
+                            radius: 50 // Adjust the radius as needed
+                        }).addTo(map);
+
+                        // Add a popup with the green roof area
+                        marker.bindPopup('Green Roof Area: ' + row.gr_area);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
